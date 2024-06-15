@@ -1,6 +1,6 @@
 ﻿namespace BudgetManageAPI.Enums
 {
-    public enum MoneyOutcomeCatagory
+    public enum MoneyOutcomeCategory
     {
         Food,
         Education,

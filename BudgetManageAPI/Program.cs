@@ -1,4 +1,9 @@
 
+using BudgetManageAPI.Data;
+using BudgetManageAPI.Repositories;
+using BudgetManageAPI.Services;
+using Microsoft.EntityFrameworkCore;
+
 namespace BudgetManageAPI
 {
     public class Program
@@ -8,6 +13,13 @@ namespace BudgetManageAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddSingleton(typeof(IRepository<>), typeof(CashFlowRepository<>));
+
+            builder.Services.AddScoped<MLService>();
+
+            builder.Services.AddDbContext<DBContextBudgetManageAPI>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BudgetMoneyDB")));
+
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
