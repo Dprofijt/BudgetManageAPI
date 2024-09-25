@@ -11,12 +11,128 @@ namespace BudgetManageAPI.Services
         private readonly MLContext _mlContext;
         private ITransformer _model;
         private List<ExpenseData> _historicalData;
+        private Dictionary<string, ITransformer> _userModels = new Dictionary<string, ITransformer>();
+
 
         public MLService()
         {
             _mlContext = new MLContext();
         }
 
+        public void TrainModelForUser(List<ExpenseData> userHistoricalData, string userId)
+        {
+            var enrichedData = AddRecurringFeatures(userHistoricalData, userId);
+
+            var transformedData = enrichedData
+                .Select(data => new TransformedExpenseData
+                {
+                    Year = data.Year,
+                    Month = data.Month,
+                    Total = data.Total,
+                    Description = data.Description,
+                    MoneyOutcomeCategory = data.MoneyOutcomeCategory.ToString()
+                }).ToList();
+
+            var dataView = _mlContext.Data.LoadFromEnumerable(transformedData);
+
+            var pipeline = _mlContext.Transforms.Conversion.MapValueToKey("CategoryKey", nameof(TransformedExpenseData.MoneyOutcomeCategory))
+                .Append(_mlContext.Transforms.Categorical.OneHotEncoding("CategoryEncoded", "CategoryKey"))
+                .Append(_mlContext.Transforms.Concatenate("Features", new[] { "Year", "Month", "CategoryEncoded" }))
+                .Append(_mlContext.Transforms.NormalizeMinMax("Features"))
+                .Append(_mlContext.Regression.Trainers.Sdca(labelColumnName: "Total", maximumNumberOfIterations: 100));
+
+            var model = pipeline.Fit(dataView);
+
+            // Store the trained model for the user (optional, depending on your application architecture)
+            // You can store it in memory, a database, or serialize it to disk
+            _userModels[userId] = model; // Assuming _userModels is a dictionary<string, ITransformer> to store models per user
+        }
+
+        public (List<ExpensePrediction> predictions, float total) PredictExpensesForUser(int year, int month, string userId)
+        {
+            if (!_userModels.ContainsKey(userId))
+            {
+                throw new ArgumentException($"Model for user {userId} has not been trained. Please train the model first.");
+            }
+
+            var predictionEngine = _mlContext.Model.CreatePredictionEngine<TransformedExpenseData, ExpensePrediction>(_userModels[userId]);
+
+            var predictions = new List<ExpensePrediction>();
+            float total = 0;
+
+            var userHistoricalData = _historicalData[int.Parse(userId)]; // Assuming _historicalData is a dictionary<string, List<ExpenseData>> storing historical data per user
+
+            var inputList = Enum.GetValues<MoneyOutcomeCategory>()
+                                .Select(category => new TransformedExpenseData
+                                {
+                                    Year = year,
+                                    Month = month,
+                                    MoneyOutcomeCategory = category.ToString()
+                                })
+                                .ToList();
+
+            foreach (var expense in inputList)
+            {
+                var prediction = predictionEngine.Predict(expense);
+
+                var predictedExpense = new ExpensePrediction
+                {
+                    Year = expense.Year,
+                    Month = expense.Month,
+                    Description = expense.Description,
+                    MoneyOutcomeCategory = expense.MoneyOutcomeCategory,
+                    Total = prediction.Total
+                };
+
+                predictions.Add(predictedExpense);
+                total += predictedExpense.Total;
+            }
+
+            var orderedPredictions = predictions.OrderBy(p => p.MoneyOutcomeCategory).ToList();
+            return (orderedPredictions, total);
+        }
+
+        private List<ExpenseData> AddRecurringFeatures(List<ExpenseData> historicalData, string userId)
+        {
+            var enrichedData = new List<ExpenseData>();
+
+            // Add original historical data
+            enrichedData.AddRange(historicalData);
+
+            // Retrieve user-specific recurring expenses and intervals (you need to implement this)
+            var recurringExpenses = GetRecurringExpensesForUser(userId);
+
+            foreach (var recurringExpense in recurringExpenses)
+            {
+                // Generate recurring entries based on intervals
+                var lastMonthWithData = historicalData.Max(d => d.Month);
+                var currentMonth = DateTime.Now.Month;
+                for (int month = (int)(lastMonthWithData + recurringExpense.Interval); month <= currentMonth; month += recurringExpense.Interval)
+                {
+                    enrichedData.Add(new ExpenseData
+                    {
+                        Year = DateTime.Now.Year, // or use a specific year logic
+                        Month = month,
+                        Total = recurringExpense.Amount,
+                        Description = recurringExpense.Description,
+                        MoneyOutcomeCategory = recurringExpense.MoneyOutcomeCategory
+                    });
+                }
+            }
+
+            return enrichedData;
+        }
+
+        // Example method to retrieve user-specific recurring expenses (you need to implement this)
+        private List<RecurringExpense> GetRecurringExpensesForUser(string userId)
+        {
+            // Implement logic to fetch recurring expenses for the user from a database or other storage
+            // Example implementation:
+            //return dbContext.RecurringExpenses.Where(re => re.UserId == userId).ToList();
+        }
+
+
+        #region "old" way 
         public void TrainModel(List<ExpenseData> trainingData)
         {
             _historicalData = trainingData;
@@ -149,5 +265,7 @@ namespace BudgetManageAPI.Services
 
             return enrichedData;
         }
+
+        #endregion
     }
 }
