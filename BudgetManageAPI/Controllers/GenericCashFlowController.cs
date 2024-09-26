@@ -1,6 +1,7 @@
 ﻿using BudgetManageAPI.Interfaces;
 using BudgetManageAPI.Models;
 using BudgetManageAPI.Repositories;
+using BudgetManageAPIGenerator;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetManageAPI.Controllers
@@ -34,7 +35,10 @@ namespace BudgetManageAPI.Controllers
         public async Task<IActionResult> GetAll()
         {
             var items = await _repository.GetAllAsync();
-            return Ok(items);
+
+            var dtos = items.Select(item => DtoGenerator.GenerateDto(item,DtoFilter.Sensitive)).ToList();
+
+            return Ok(dtos);
         }
 
         [HttpGet("{id}")]
