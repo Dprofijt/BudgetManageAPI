@@ -20,8 +20,7 @@ namespace BudgetManageAPI.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class GenericCashFlowController<T> : ControllerBase where T : class,
-        ICashFlow
+    public class GenericCashFlowController<T> : BaseController<T> where T : class, ICashFlow
     {
 
         private readonly IRepository<T> _repository;
@@ -36,9 +35,8 @@ namespace BudgetManageAPI.Controllers
         {
             var items = await _repository.GetAllAsync();
 
-            var dtos = items.Select(item => DtoGenerator.GenerateDto(item,DtoFilter.Sensitive)).ToList();
 
-            return Ok(dtos);
+            return OkWithDto(items, DtoFilter.None);
         }
 
         [HttpGet("{id}")]
@@ -46,7 +44,7 @@ namespace BudgetManageAPI.Controllers
         {
             var item = await _repository.GetByIdAsync(id);
             if (item == null) return NotFound();
-            return Ok(item);
+            return OkWithDto(item, DtoFilter.None);
         }
 
         [HttpPost]
