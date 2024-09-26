@@ -1,0 +1,97 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="BudgetManageAPI\bin\Debug\net8.0\BudgetManageAPI.dll" #> <!-- Reference the assembly directly -->
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+<#
+    this.Write("Starting T4 template execution...\n");
+    
+    var modelNamespace = "BudgetManageAPI.Models"; // Change to your models namespace
+    this.Write("Model namespace set to: " + modelNamespace + "\n");
+    
+    var dtoNamespace = "BudgetManageAPI.DTOs"; // Change to your DTOs namespace
+    this.Write("DTO namespace set to: " + dtoNamespace + "\n");
+    
+    try
+    {
+        // Load the assembly containing the models
+        var assembly = Assembly.LoadFrom(@"BudgetManageAPI\bin\Debug\net8.0\BudgetManageAPI.dll");
+        
+        // List all types in the loaded assembly for debugging
+        this.Write("Listing all types in the BudgetManageAPI assembly:\n");
+        foreach (var type in assembly.GetTypes())
+        {
+            this.Write($"Namespace: {type.Namespace}, Type: {type.Name}\n");
+        }
+
+        var models = assembly.GetTypes()
+                     .Where(t => t.Namespace == modelNamespace && t.IsClass && t.IsPublic)
+                     .ToList();
+        
+        this.Write("Searching for models...\n");
+        
+        // Debugging output to see which models are found
+        if (models.Count == 0)
+        {
+            this.Write("No models found in the specified namespace.\n");
+        }
+        else
+        {
+            this.Write($"Found {models.Count} models:\n");
+            foreach (var model in models)
+            {
+                this.Write($"- {model.Name}\n");
+            }
+        }
+
+        foreach (var model in models)
+        {
+            var dtoClassName = model.Name + "Dto";
+#>
+namespace <#= dtoNamespace #>
+{
+    public class <#= dtoClassName #>
+    {
+<# 
+            foreach (var property in model.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                var propertyType = property.PropertyType;
+                var propertyName = property.Name;
+
+                // Check if the property is an enum type
+                if (propertyType.IsEnum)
+                {
+                    this.Write($"Property {propertyName} is an enum of type {propertyType.Name}.\n");
+                }
+#>
+        public <#= propertyType.Name #> <#= propertyName #> { get; set; }
+<#
+            }
+#>
+    }
+}
+
+public static class DtoGeneratorConfirmation
+{
+    public static void ConfirmGeneration()
+    {
+        this.Write("DTO generation completed successfully.\n");
+    }
+}
+
+
+<#
+    }}
+    catch (ReflectionTypeLoadException ex)
+    {
+        this.Write("ReflectionTypeLoadException caught:\n");
+        foreach (var loaderException in ex.LoaderExceptions)
+        {
+            this.Write($"Loader Exception: {loaderException.Message}\n");
+        }
+    }
+#>

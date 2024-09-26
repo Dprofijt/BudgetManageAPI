@@ -18,4 +18,28 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Models\GenerateDtoFromModels.tt">
+      <LastGenOutput>GenerateDtoFromModels.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+    <Folder Include="T4Templates\DTOs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Models\GenerateDtoFromModels.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>GenerateDtoFromModels.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>
