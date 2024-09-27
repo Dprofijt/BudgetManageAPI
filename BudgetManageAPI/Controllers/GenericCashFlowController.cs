@@ -36,7 +36,7 @@ namespace BudgetManageAPI.Controllers
             var items = await _repository.GetAllAsync();
 
 
-            return OkWithDto(items, DtoFilter.None);
+            return OkWithDto(items, DtoFilter.Default);
         }
 
         [HttpGet("{id}")]
@@ -44,7 +44,7 @@ namespace BudgetManageAPI.Controllers
         {
             var item = await _repository.GetByIdAsync(id);
             if (item == null) return NotFound();
-            return OkWithDto(item, DtoFilter.None);
+            return OkWithDto(item, DtoFilter.Default);
         }
 
         [HttpPost]

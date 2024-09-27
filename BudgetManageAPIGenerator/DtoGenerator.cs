@@ -28,10 +28,16 @@ namespace BudgetManageAPIGenerator
             //TODO no clue about this
         }
 
-        // Add a method to generate DTO from an instance
-        public static object GenerateDto(object model, DtoFilter filter = DtoFilter.None)
+        /// <summary>
+        /// Generates a dynamic Data Transfer Object (DTO) from a given model object,
+        /// applying optional filtering based on the specified DtoFilter.
+        /// </summary>
+        /// <param name="model">The source object from which to create the DTO.</param>
+        /// <param name="filter">The filter to apply when generating the DTO.</param>
+        /// <returns>An ExpandoObject representing the filtered properties of the model.</returns>
+        public static object GenerateDto(object model, DtoFilter filter = DtoFilter.Default)
         {
-            var dto = new ExpandoObject() as IDictionary<string, object>; // Create a dynamic DTO
+            var dto = new ExpandoObject() as IDictionary<string, object>;
 
             var modelType = model.GetType();
 
@@ -41,16 +47,13 @@ namespace BudgetManageAPIGenerator
             {
                 switch (filter)
                 {
-                    case DtoFilter.Sensitive:
-                        // Exclude properties marked with [Sensitive]
+                    //also returns sensitive information
+                    case DtoFilter.ShowSensitive:
+                        return true;
+                    //the default, will filter out sensitive
+                    case DtoFilter.Default:
                         return property.GetCustomAttribute<SensitiveAttribute>() == null;
 
-                    case DtoFilter.Public:
-                        // Add logic for public properties, if needed
-                        // For now, we'll just include all properties
-                        return true;
-
-                    case DtoFilter.None:
                     default:
                         // No filtering, include all properties
                         return true;

@@ -6,10 +6,8 @@ namespace BudgetManageAPIGenerator
 {
     public enum DtoFilter
     {
-        None,
-        Sensitive,
-        Public,
-        // Add other categories as needed
+        Default,
+        ShowSensitive,
     }
 
 }
