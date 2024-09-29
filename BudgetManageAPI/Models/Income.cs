@@ -1,17 +1,23 @@
-﻿using BudgetManageAPI.Attributes;
+﻿using CommonLibrary.Attributes;
 using BudgetManageAPI.Enums;
 using BudgetManageAPI.Interfaces;
+using CommonLibrary.Abstract;
 
 namespace BudgetManageAPI.Models
 {
-    public class Income : ICashFlow
+
+    [AutoGenerateProperties(
+    "Name:string:true",
+    "TestInt2:int:false"
+        )]
+    public partial class Income : AutoGeneratableCashFlowBase, ICashFlow
     {
         [Sensitive]
         public int Id { get; set; }
-        public string? Description { get; set; }
+        //public string? Description { get; set; }
 
         public MoneyIncomeCatagory MoneyIncomeCatagory { get; set; }
-        
+
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
         [Sensitive]

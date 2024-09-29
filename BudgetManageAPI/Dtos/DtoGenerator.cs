@@ -5,7 +5,7 @@ using System.Reflection.Emit;
 using System.Reflection;
 using System.Text;
 using System.Dynamic;
-using BudgetManageAPI.Attributes;
+using CommonLibrary.Attributes;
 
 namespace BudgetManageAPI.Dtos
 {

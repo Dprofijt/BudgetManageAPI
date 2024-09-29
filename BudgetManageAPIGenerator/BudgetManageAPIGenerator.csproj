@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <!--<Nullable>enable</Nullable>-->
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <LangVersion>latest</LangVersion>
     <!--<OutputPath>bin\$(Configuration)\$(TargetFramework)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\$(TargetFramework)\</IntermediateOutputPath>
     <BuildOutputTargetFolder>analyzers</BuildOutputTargetFolder>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BudgetManageAPI.Attributes
+namespace CommonLibrary.Attributes
 {
 
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]

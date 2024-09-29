@@ -1,12 +1,13 @@
 ﻿using BudgetManageAPI.Enums;
 using BudgetManageAPI.Interfaces;
+using CommonLibrary.Abstract;
+using CommonLibrary.Attributes;
 
 namespace BudgetManageAPI.Models
 {
-    public class Outcome : ICashFlow
+    public partial class Outcome : AutoGeneratableCashFlowBase, ICashFlow
     {
         public int Id { get; set; }
-        public string Description { get; set; }
         public MoneyOutcomeCategory MoneyOutcomeCatagory { get; set; }
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
