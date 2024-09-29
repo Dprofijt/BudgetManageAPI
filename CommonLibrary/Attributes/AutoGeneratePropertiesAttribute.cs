@@ -9,13 +9,17 @@ namespace CommonLibrary.Attributes
     {
         public PropertyInfo[] Properties { get; }
 
+        /// <summary>
+        /// Attribute so that the PropertyGenerator knows what to create for the class
+        /// </summary>
+        /// <param name="properties"> define properties by "name:type:requiredBool"</param>
         public AutoGeneratePropertiesAttribute(params string[] properties)
         {
             // Convert each string to a PropertyInfo instance
             Properties = properties.Select(p =>
             {
                 var parts = p.Split(':');
-                return new PropertyInfo(parts[0], parts[1], bool.Parse(parts[2]));
+                return new PropertyInfo(parts[0], parts[1], bool.Parse(parts[2]), parts[3]);
             }).ToArray();
         }
     }
@@ -24,12 +28,14 @@ namespace CommonLibrary.Attributes
         public string Name { get; }
         public string Type { get; }
         public bool IsRequired { get; }
+        public string DefaultValue{ get; }
 
-        public PropertyInfo(string name, string type, bool isRequired = false)
+        public PropertyInfo(string name, string type, bool isRequired = false, string defaultValue = null)
         {
             Name = name;
             Type = type;
             IsRequired = isRequired;
+            DefaultValue = defaultValue;
         }
     }
 }

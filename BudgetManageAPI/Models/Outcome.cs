@@ -2,18 +2,18 @@
 using BudgetManageAPI.Interfaces;
 using CommonLibrary.Abstract;
 using CommonLibrary.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace BudgetManageAPI.Models
 {
-    [AutoGenerateProperties(
-        "UserId:string:false",
-        "Amount:decimal:true"
-        )]
+    [AutoGenerateProperties]
     public partial class Outcome : AutoGeneratableCashFlowBase, ICashFlow
     {
+        [Key]
         public int Id { get; set; }
         public MoneyOutcomeCategory MoneyOutcomeCatagory { get; set; }
         public DateTime Date { get; set; }
-        //public string UserId { get; set; }
+        [Sensitive]
+        public string UserId { get; set; }
     }
 }

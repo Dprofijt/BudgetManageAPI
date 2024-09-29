@@ -2,29 +2,25 @@
 using BudgetManageAPI.Enums;
 using BudgetManageAPI.Interfaces;
 using CommonLibrary.Abstract;
+using System.ComponentModel.DataAnnotations;
 
 namespace BudgetManageAPI.Models
 {
 
-    [AutoGenerateProperties(
-    "Name:string:true",
-    "TestInt2:int:false"
-        )]
+    [AutoGenerateProperties]
     public partial class Income : AutoGeneratableCashFlowBase, ICashFlow
     {
         [Sensitive]
+        [Key]
         public int Id { get; set; }
         //public string? Description { get; set; }
 
         public MoneyIncomeCatagory MoneyIncomeCatagory { get; set; }
-
-        public decimal Amount { get; set; }
         public DateTime Date { get; set; }
         [Sensitive]
         public string UserId { get; set; }
 
-        // Ensure the Amount is never negative
-        public bool IsValidAmount => Amount >= 0;
+
 
         // Computed property based on income category
         public string IncomeCategoryDisplay => MoneyIncomeCatagory.ToString();

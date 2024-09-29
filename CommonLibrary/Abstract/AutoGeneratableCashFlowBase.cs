@@ -6,8 +6,8 @@ using System.Text;
 namespace CommonLibrary.Abstract
 {
     [AutoGenerateProperties(
-    "Description:string:true",
-    "TestInt:int:false"
+        "Amount:decimal:true",
+    "Description:string:true"
         )]
     public abstract class AutoGeneratableCashFlowBase
     {

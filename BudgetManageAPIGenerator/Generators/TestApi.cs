@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BudgetManageAPIGenerator
+namespace BudgetManageAPIGenerator.Generators
 {
     [Generator]
     public class TestApi : ISourceGenerator

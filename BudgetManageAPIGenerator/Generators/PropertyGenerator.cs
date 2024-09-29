@@ -6,7 +6,7 @@ using System.Linq; // For LINQ methods
 using System.Text; // For StringBuilder
 using System.Xml.Linq; // Unused in this code, can be removed
 
-namespace BudgetManageAPIGenerator // Namespace for the source generator
+namespace BudgetManageAPIGenerator.Generators // Namespace for the source generator
 {
     // The PropertyGenerator class implements ISourceGenerator to generate properties dynamically
     [Generator]
@@ -17,6 +17,16 @@ namespace BudgetManageAPIGenerator // Namespace for the source generator
         private const decimal MAX_VALUE = 1000000; // Maximum value for integer properties
         private const int MIN_VALUE = 0; // Minimum value for integers
         private const int MAX_LENGTH = 500; // Maximum length for string properties
+
+        // Diagnostic descriptor for existing properties
+        private static readonly DiagnosticDescriptor ExistingPropertyDescriptor = new DiagnosticDescriptor(
+            id: "BGA001",
+            title: "Property Already Defined",
+            messageFormat: "The property '{0}' is already defined in the class '{1}'. Skipping generation.",
+            category: "Usage",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true
+        );
 
         // This method is called once when the generator is initialized
         public void Initialize(GeneratorInitializationContext context)
@@ -76,10 +86,23 @@ namespace BudgetManageAPIGenerator // Namespace for the source generator
                         .OfType<IPropertySymbol>()
                         .Select(p => p.Name));
 
-                    // Filter out properties that already exist
-                    propertiesToGenerate = propertiesToGenerate
-                        .Where(prop => !existingProperties.Contains(prop.Split(':')[0]))
-                        .ToList();
+                    // Filter out properties that already exist and report diagnostics for them
+                    foreach (var prop in propertiesToGenerate.ToList())
+                    {
+                        var propName = prop.Split(':')[0];
+                        if (existingProperties.Contains(propName))
+                        {
+                            // Report a diagnostic message for the existing property
+                            context.ReportDiagnostic(Diagnostic.Create(
+                                ExistingPropertyDescriptor,
+                                Location.None,
+                                propName,
+                                classSymbol.Name));
+
+                            // Remove the existing property from the list of properties to generate
+                            propertiesToGenerate.Remove(prop);
+                        }
+                    }
 
                     // Generate code only if there are new properties to add
                     if (propertiesToGenerate.Count > 0)
@@ -145,10 +168,15 @@ namespace {classSymbol.ContainingNamespace}
                 var validation = getValidateChecksForSetters(propertyType, propertyName);
 
                 // Add validation for required properties
-                if (isRequired)
+                if (isRequired && !propertyType.Equals("decimal", StringComparison.OrdinalIgnoreCase))
                 {
                     validation.Add($"if (value == null) throw new ArgumentNullException(nameof({propertyName}));");
                 }
+
+                // Initialize the backing field for non-nullable types (e.g., int, decimal)
+                var defaultValue = propertyType.Equals("decimal", StringComparison.OrdinalIgnoreCase)
+                                   ? " = 0"
+                                   : ""; // Default value is set to 0 for non-nullable types
 
                 // Append the generated property code to the StringBuilder
                 sb.AppendLine($@"
@@ -161,7 +189,7 @@ namespace {classSymbol.ContainingNamespace}
             _{propertyName} = value; // Set the property value
         }}
     }}
-    private {propertyType} _{propertyName};"); // Backing field for the property
+    private {propertyType} _{propertyName}{defaultValue};"); // Backing field for the property
             }
 
             // Add the Validate method after generating the properties
@@ -179,7 +207,7 @@ public void Validate()
                 var validateChecks = GetValidateChecksForValidateFunction(type, name);
 
                 // Add required property check
-                if (isRequired)
+                if (isRequired && !type.Equals("decimal", StringComparison.OrdinalIgnoreCase))
                 {
                     validateChecks.Add($"if ({name} == null) throw new ArgumentNullException(nameof({name}));");
                 }
