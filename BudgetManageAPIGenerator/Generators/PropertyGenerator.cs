@@ -22,7 +22,7 @@ namespace BudgetManageAPIGenerator.Generators // Namespace for the source genera
         private static readonly DiagnosticDescriptor ExistingPropertyDescriptor = new DiagnosticDescriptor(
             id: "BGA001",
             title: "Property Already Defined",
-            messageFormat: "The property '{0}' is already defined in the class '{1}'. Skipping generation.",
+            messageFormat: "The property '{0}' is already defined in the class '{1}' (or in an extended class). Skipping generation.",
             category: "Usage",
             defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true
@@ -86,16 +86,25 @@ namespace BudgetManageAPIGenerator.Generators // Namespace for the source genera
                         .OfType<IPropertySymbol>()
                         .Select(p => p.Name));
 
+
                     // Filter out properties that already exist and report diagnostics for them
                     foreach (var prop in propertiesToGenerate.ToList())
                     {
                         var propName = prop.Split(':')[0];
                         if (existingProperties.Contains(propName))
                         {
+                            // Find the location of the existing property in the syntax tree
+                            var existingPropertySyntax = classDeclaration.Members
+                                .OfType<PropertyDeclarationSyntax>()
+                                .FirstOrDefault(p => p.Identifier.Text.Equals(propName, StringComparison.OrdinalIgnoreCase));
+
+                            // Create a location for the diagnostic based on the existing property syntax
+                            var location = existingPropertySyntax?.GetLocation() ?? Location.None;
+
                             // Report a diagnostic message for the existing property
                             context.ReportDiagnostic(Diagnostic.Create(
                                 ExistingPropertyDescriptor,
-                                Location.None,
+                                location,
                                 propName,
                                 classSymbol.Name));
 
