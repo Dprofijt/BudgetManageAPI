@@ -12,7 +12,7 @@ namespace CommonLibrary.Attributes
         /// <summary>
         /// Attribute so that the PropertyGenerator knows what to create for the class
         /// </summary>
-        /// <param name="properties"> define properties by "name:type:requiredBool"</param>
+        /// <param name="properties"> define properties by "name:type:requiredBool:defaultValue"</param>
         public AutoGeneratePropertiesAttribute(params string[] properties)
         {
             // Convert each string to a PropertyInfo instance

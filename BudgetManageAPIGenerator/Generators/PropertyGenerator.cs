@@ -172,7 +172,8 @@ namespace {classSymbol.ContainingNamespace}
                 var propertyName = parts[0]; // Get the property name
                 var propertyType = parts[1]; // Get the property type
                 var isRequired = bool.Parse(parts[2]); // Determine if the property is required
-                
+                var defaultVal = parts.Length > 3 ? parts[3] : null; // Get the default value if it exists
+
                 // Determine the property type and whether it's required
                 string propertyTypeWithNullability = isRequired ? propertyType : $"{propertyType}?";
                 string requiredModifier = isRequired ? "required " : "";
@@ -186,14 +187,17 @@ namespace {classSymbol.ContainingNamespace}
                     validation.Add($"if (value == null) throw new ArgumentNullException(nameof({propertyName}));");
                 }
 
-                // Initialize the backing field for non-nullable types (e.g., int, decimal, string)
-                string defaultValue = propertyType switch
+
+                // Initialize the backing field for the property
+                string defaultValue = string.IsNullOrEmpty(defaultVal) ? propertyType switch
                 {
                     "decimal" => " = 0m", // Use the 'm' suffix for decimal literals
                     "int" => " = 0",
                     "string" => " = string.Empty", // Initialize strings to an empty string
                     _ => "" // Default case, no initialization
-                };
+                } : propertyType.Equals("string", StringComparison.OrdinalIgnoreCase)
+                    ? $" = \"{defaultVal}\"" // Wrap string default values in quotes
+                    : $" = {defaultVal}"; // Use the provided default value for non-string types
 
 
                 // Append the generated property code to the StringBuilder

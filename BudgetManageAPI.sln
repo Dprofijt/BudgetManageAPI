@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetManageAPIGenerator", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonLibrary", "CommonLibrary\CommonLibrary.csproj", "{0F6AEE9F-20BD-406E-BB7A-2FA521E0ECC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGenerator", "TestGenerator\TestGenerator.csproj", "{304D54AF-84F4-413E-8E25-EA84993242C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestGenerator", "TestGenerator\TestGenerator.csproj", "{304D54AF-84F4-413E-8E25-EA84993242C9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7A2CDFEF-81B7-46DD-8E5B-23E6B9D106B9} = {7A2CDFEF-81B7-46DD-8E5B-23E6B9D106B9}
 	EndProjectSection
@@ -30,7 +30,6 @@ Global
 		{7A2CDFEF-81B7-46DD-8E5B-23E6B9D106B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A2CDFEF-81B7-46DD-8E5B-23E6B9D106B9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C296DE65-4E3D-4C11-BCFA-671441D1C360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C296DE65-4E3D-4C11-BCFA-671441D1C360}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C296DE65-4E3D-4C11-BCFA-671441D1C360}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C296DE65-4E3D-4C11-BCFA-671441D1C360}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF924A80-9C02-4E29-93A7-ACAFEB3E1587}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -42,7 +41,6 @@ Global
 		{0F6AEE9F-20BD-406E-BB7A-2FA521E0ECC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F6AEE9F-20BD-406E-BB7A-2FA521E0ECC4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{304D54AF-84F4-413E-8E25-EA84993242C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{304D54AF-84F4-413E-8E25-EA84993242C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{304D54AF-84F4-413E-8E25-EA84993242C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{304D54AF-84F4-413E-8E25-EA84993242C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
