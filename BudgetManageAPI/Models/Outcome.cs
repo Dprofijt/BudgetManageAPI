@@ -14,6 +14,6 @@ namespace BudgetManageAPI.Models
         public MoneyOutcomeCategory MoneyOutcomeCatagory { get; set; }
         public DateTime Date { get; set; }
         [Sensitive]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
     }
 }

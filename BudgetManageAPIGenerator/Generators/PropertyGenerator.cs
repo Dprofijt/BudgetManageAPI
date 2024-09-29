@@ -24,7 +24,7 @@ namespace BudgetManageAPIGenerator.Generators // Namespace for the source genera
             title: "Property Already Defined",
             messageFormat: "The property '{0}' is already defined in the class '{1}'. Skipping generation.",
             category: "Usage",
-            defaultSeverity: DiagnosticSeverity.Warning,
+            defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true
         );
 
@@ -163,6 +163,10 @@ namespace {classSymbol.ContainingNamespace}
                 var propertyName = parts[0]; // Get the property name
                 var propertyType = parts[1]; // Get the property type
                 var isRequired = bool.Parse(parts[2]); // Determine if the property is required
+                
+                // Determine the property type and whether it's required
+                string propertyTypeWithNullability = isRequired ? propertyType : $"{propertyType}?";
+                string requiredModifier = isRequired ? "required " : "";
 
                 // Get validation checks for setters
                 var validation = getValidateChecksForSetters(propertyType, propertyName);
@@ -173,14 +177,19 @@ namespace {classSymbol.ContainingNamespace}
                     validation.Add($"if (value == null) throw new ArgumentNullException(nameof({propertyName}));");
                 }
 
-                // Initialize the backing field for non-nullable types (e.g., int, decimal)
-                var defaultValue = propertyType.Equals("decimal", StringComparison.OrdinalIgnoreCase)
-                                   ? " = 0"
-                                   : ""; // Default value is set to 0 for non-nullable types
+                // Initialize the backing field for non-nullable types (e.g., int, decimal, string)
+                string defaultValue = propertyType switch
+                {
+                    "decimal" => " = 0m", // Use the 'm' suffix for decimal literals
+                    "int" => " = 0",
+                    "string" => " = string.Empty", // Initialize strings to an empty string
+                    _ => "" // Default case, no initialization
+                };
+
 
                 // Append the generated property code to the StringBuilder
                 sb.AppendLine($@"
-    public {propertyType} {propertyName}
+    public {requiredModifier}{propertyType} {propertyName}
     {{
         get => _{propertyName}; // Getter for the property
         set

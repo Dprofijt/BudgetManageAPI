@@ -44,7 +44,7 @@ namespace BudgetManageAPI.Dtos
             });
             foreach (var property in filteredProperties)
             {
-                dto[property.Name] = property.GetValue(model);
+                dto[property.Name] = property.GetValue(model) ?? "NomodelName";
             }
         
             return dto;

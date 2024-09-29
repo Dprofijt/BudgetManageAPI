@@ -7,8 +7,8 @@ namespace BudgetManageAPI.Models.ExpensePrediction
     {
         public float Year { get; set; }
         public float Month { get; set; }
-        public string Description { get; set; }
-        public string MoneyOutcomeCategory { get; set; }
+        public string? Description { get; set; }
+        public string? MoneyOutcomeCategory { get; set; }
         [ColumnName("Score")]
         public float Total { get; set; }
     }
@@ -17,7 +17,7 @@ namespace BudgetManageAPI.Models.ExpensePrediction
         public float Year { get; set; }
         public float Month { get; set; }
         public float Total { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public MoneyOutcomeCategory MoneyOutcomeCategory { get; set; } // should be of value MoneyOutcomeCategory Enum
     }
     public class TransformedExpenseData
@@ -25,8 +25,8 @@ namespace BudgetManageAPI.Models.ExpensePrediction
         public float Year { get; set; }
         public float Month { get; set; }
         public float Total { get; set; }
-        public string Description { get; set; }
-        public string MoneyOutcomeCategory { get; set; }
+        public string? Description { get; set; }
+        public string? MoneyOutcomeCategory { get; set; }
     }
 
 
@@ -48,7 +48,7 @@ namespace BudgetManageAPI.Models.ExpensePrediction
         public float Year { get; set; }
         public float Month { get; set; }
         public MoneyOutcomeCategory MoneyOutcomeCategory { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public float Total { get; set; }
     }
 }

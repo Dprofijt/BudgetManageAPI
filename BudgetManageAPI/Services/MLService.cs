@@ -9,8 +9,8 @@ namespace BudgetManageAPI.Services
     public class MLService
     {
         private readonly MLContext _mlContext;
-        private ITransformer _model;
-        private List<ExpenseData> _historicalData;
+        private ITransformer? _model;
+        private List<ExpenseData>? _historicalData;
 
         public MLService()
         {
@@ -80,8 +80,9 @@ namespace BudgetManageAPI.Services
             {
                 var prediction = predictionEngine.Predict(expense);
 
+                if (_historicalData != null) continue;
                 // Check historical data for the category
-                var hasHistoricalData = _historicalData.Any(data => data.MoneyOutcomeCategory.ToString() == expense.MoneyOutcomeCategory);
+                var hasHistoricalData = _historicalData != null && _historicalData.Any(data => data.MoneyOutcomeCategory.ToString() == expense.MoneyOutcomeCategory);
 
                 var predictedExpense = new ExpensePrediction
                 {
@@ -89,7 +90,7 @@ namespace BudgetManageAPI.Services
                     Month = expense.Month,
                     Description = expense.Description,
                     MoneyOutcomeCategory = expense.MoneyOutcomeCategory,
-                    Total = hasHistoricalData ? prediction.Total : 0
+                    Total = hasHistoricalData ? (prediction?.Total ?? 0) : 0
                 };
                 predictions.Add(predictedExpense);
                 total += predictedExpense.Total;

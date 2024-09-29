@@ -7,7 +7,7 @@ namespace BudgetManageAPI.Repositories
     public interface IRepository<T> where T : ICashFlow
     {
         Task<IEnumerable<T>> GetAllAsync();
-        Task<T> GetByIdAsync(int id);
+        Task<T?> GetByIdAsync(int id);
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
@@ -23,7 +23,7 @@ namespace BudgetManageAPI.Repositories
             return Task.FromResult(_items.Values.AsEnumerable());
         }
 
-        public Task<T> GetByIdAsync(int id)
+        public Task<T?> GetByIdAsync(int id)
         {
             _items.TryGetValue(id, out var item);
             return Task.FromResult(item);

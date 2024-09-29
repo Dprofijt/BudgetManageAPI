@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <Folder Include="Attributes\" />
-    <Folder Include="obj\Generated\BudgetManageAPIGenerator\BudgetManageAPIGenerator.TestApi\" />
+    <Folder Include="obj\Generated\BudgetManageAPIGenerator\" />
   </ItemGroup>
 
   <PropertyGroup>
