@@ -6,7 +6,7 @@ using System.Text;
 namespace BudgetManageAPIGenerator
 {
     [Generator]
-    public class test : ISourceGenerator
+    public class TestApi : ISourceGenerator
     {
         public void Execute(GeneratorExecutionContext context)
         {
