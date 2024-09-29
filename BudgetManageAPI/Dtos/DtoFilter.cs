@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BudgetManageAPIGenerator
+namespace BudgetManageAPI.Dtos
 {
     public enum DtoFilter
     {

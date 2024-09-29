@@ -1,8 +1,4 @@
-﻿using BudgetManageAPIGenerator.Models;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
@@ -11,23 +7,10 @@ using System.Text;
 using System.Dynamic;
 using BudgetManageAPI.Attributes;
 
-namespace BudgetManageAPIGenerator
+namespace BudgetManageAPI.Dtos
 {
-    [Generator]
-    public class DtoGenerator : ISourceGenerator
+    public class DtoGenerator 
     {
-
-        public void Initialize(GeneratorInitializationContext context)
-        {
-            // Initialization logic if needed
-        }
-
-        public void Execute(GeneratorExecutionContext context)
-        {
-            // Get the syntax trees in the current compilation
-            //TODO no clue about this
-        }
-
         /// <summary>
         /// Generates a dynamic Data Transfer Object (DTO) from a given model object,
         /// applying optional filtering based on the specified DtoFilter.

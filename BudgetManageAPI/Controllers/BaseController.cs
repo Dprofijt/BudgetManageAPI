@@ -1,5 +1,6 @@
-﻿using BudgetManageAPI.Interfaces;
-using BudgetManageAPIGenerator;
+﻿using BudgetManageAPI.Dtos;
+using BudgetManageAPI.Interfaces;
+using CommonLibrary;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetManageAPI.Controllers
@@ -12,6 +13,14 @@ namespace BudgetManageAPI.Controllers
             return Ok(dtos);
         }
         protected IActionResult OkWithDto(T item, DtoFilter filter)
+        {
+            var dto = DtoGenerator.GenerateDto(item, filter);
+            return Ok(dto);
+        }
+    }
+    public abstract class BaseController : ControllerBase
+    {
+        protected IActionResult OkWithDto(object item, DtoFilter filter)
         {
             var dto = DtoGenerator.GenerateDto(item, filter);
             return Ok(dto);

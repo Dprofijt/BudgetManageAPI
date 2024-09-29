@@ -2,12 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <!--<Nullable>enable</Nullable>-->
+
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <!--<OutputPath>bin\$(Configuration)\$(TargetFramework)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\$(TargetFramework)\</IntermediateOutputPath>
-    <BuildOutputTargetFolder>analyzers</BuildOutputTargetFolder>
-    <IncludeBuildOutput>false</IncludeBuildOutput>-->
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,16 +21,9 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0" />
   </ItemGroup>
-  <!--<ItemGroup>
-    <FrameworkReference Include="Microsoft.NETCore.App" />
-  </ItemGroup>-->
 
   <ItemGroup>
-    <ProjectReference Include="..\CommonLibrary\CommonLibrary.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="bin\Debug\netstandard2.0\netstandard2.0\\BudgetManageAPIGenerator.dll" />
+    <None Remove="bin\Debug\netstandard2.0\netstandard2.0\\TestGenerator.dll" />
   </ItemGroup>
 
   <ItemGroup>
