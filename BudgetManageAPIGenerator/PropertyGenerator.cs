@@ -4,12 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace BudgetManageAPIGenerator
 {
     [Generator]
     public class PropertyGenerator : ISourceGenerator
     {
+        private const decimal MAX_AMOUNT = 1000000; // Example maximum amount
+        private const decimal MAX_VALUE = 1000000; // Example maximum amount
+        private const int MIN_VALUE = 0; // Example minimum value for integers
+        private const int MAX_LENGTH = 500; // Example maximum length for strings
+
         public void Initialize(GeneratorInitializationContext context)
         {
             // No need for initialization in this example.
@@ -112,6 +118,13 @@ namespace {classSymbol.ContainingNamespace}
         {
             var sb = new StringBuilder();
 
+            // Adding amount property
+            //var amountProperty = "Amount:decimal:true"; // Required decimal property
+            //if (!properties.Contains(amountProperty)) // Prevent duplicates
+            //{
+            //    properties.Add(amountProperty);
+            //}
+
             foreach (var property in properties)
             {
                 var parts = property.Split(':');
@@ -119,9 +132,12 @@ namespace {classSymbol.ContainingNamespace}
                 var propertyType = parts[1];
                 var isRequired = bool.Parse(parts[2]);
 
-                var validation = isRequired
-                    ? $"if (value == null) throw new ArgumentNullException(nameof({propertyName}));"
-                    : string.Empty;
+                var validation = getValidateChecksForSetters(propertyType, propertyName);
+
+                if (isRequired)
+                {
+                    validation.Add($"if (value == null) throw new ArgumentNullException(nameof({propertyName}));");
+                }
 
                 sb.AppendLine($@"
     public {propertyType} {propertyName}
@@ -129,18 +145,90 @@ namespace {classSymbol.ContainingNamespace}
         get => _{propertyName};
         set
         {{
-            {validation}
+            {string.Join("\r\n        ", validation)}
             _{propertyName} = value;
         }}
     }}
     private {propertyType} _{propertyName};");
             }
 
+            // Add the Validate method after generating the properties
+            sb.AppendLine($@"
+public void Validate()
+{{
+    // Validation logic for each property
+    {string.Join("\r\n" + "    ", properties.Select(p =>
+            {
+                var name = p.Split(':')[0];
+                var type = p.Split(':')[1];
+                var isRequired = bool.Parse(p.Split(':')[2]);
+
+                var validateChecks = GetValidateChecksForValidateFunction(type, name);
+
+                if (isRequired)
+                {
+                    validateChecks.Add($"if ({name} == null) throw new ArgumentNullException(nameof({name}));");
+                }
+
+
+                return string.Join("\r\n" + "    ", validateChecks).Trim();
+            }))}
+}}");
+
+
             return sb.ToString();
         }
 
+        public List<string> getValidateChecksForSetters(string propertyType, string propertyName)
+        {
+            var validation = new List<string>();
+            if (propertyType.Equals("int", StringComparison.OrdinalIgnoreCase))
+            {
+                validation.Add($"if (value < 0) throw new ArgumentOutOfRangeException(nameof({propertyName}), \"{propertyName} must be non-negative.\");");
 
+                validation.Add($"if (value < {MIN_VALUE} || value > {MAX_VALUE}) throw new ArgumentOutOfRangeException(nameof({propertyName}), \"{propertyName} must be between {MIN_VALUE} and {MAX_VALUE}.\");");
 
+            }
+            else if (propertyType.Equals("string", StringComparison.OrdinalIgnoreCase))
+            {
+                validation.Add($"if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(\"{propertyName} cannot be null or empty.\", nameof({propertyName}));");
+
+                validation.Add($"if (value.Length > {MAX_LENGTH}) throw new ArgumentException(\"{propertyName} cannot exceed {MAX_LENGTH} characters.\", nameof({propertyName}));");
+
+            }
+
+            else if (propertyType.Equals("decimal", StringComparison.OrdinalIgnoreCase))
+            {
+                validation.Add($"if (value < 0) throw new ArgumentOutOfRangeException(nameof({propertyName}), \"{propertyName} must be non-negative.\");");
+                // Add maximum amount validation
+                validation.Add($"if (value > {MAX_AMOUNT}) throw new ArgumentOutOfRangeException(nameof({propertyName}), \"{propertyName} cannot exceed {MAX_AMOUNT}.\");");
+                // Add precision check
+                validation.Add($"if (Math.Round(value, 2) != value) throw new ArgumentException(\"{propertyName} must have at most two decimal places.\", nameof({propertyName}));");
+            }
+
+            return validation;
+        }
+
+        public List<string> GetValidateChecksForValidateFunction(string propertyType, string propertyName)
+        {
+            var validateChecks = new List<string>();
+            if (propertyType.Equals("int", StringComparison.OrdinalIgnoreCase))
+            {
+                validateChecks.Add($"if ({propertyName} < {MIN_VALUE} || {propertyName} > {MAX_VALUE}) throw new ArgumentOutOfRangeException(nameof({propertyName}), \"{propertyName} must be between {MIN_VALUE} and {MAX_VALUE}.\");");
+            }
+            else if (propertyType.Equals("string", StringComparison.OrdinalIgnoreCase))
+            {
+                validateChecks.Add($"if (string.IsNullOrWhiteSpace({propertyName})) throw new ArgumentException(\"{propertyName} cannot be null or empty.\", nameof({propertyName}));");
+                validateChecks.Add($"if ({propertyName}.Length > {MAX_LENGTH}) throw new ArgumentException(\"{propertyName} cannot exceed {MAX_LENGTH} characters.\", nameof({propertyName}));");
+            }
+            else if (propertyType.Equals("decimal", StringComparison.OrdinalIgnoreCase))
+            {
+                validateChecks.Add($"if ({propertyName} < 0) throw new ArgumentOutOfRangeException(nameof({propertyName}), \"{propertyName} must be non-negative.\");");
+                validateChecks.Add($"if ({propertyName} > {MAX_AMOUNT}) throw new ArgumentOutOfRangeException(nameof({propertyName}), \"{propertyName} cannot exceed {MAX_AMOUNT}.\");");
+                validateChecks.Add($"if (Math.Round({propertyName}, 2) != {propertyName}) throw new ArgumentException(\"{propertyName} must have at most two decimal places.\", nameof({propertyName}));");
+            }
+            return validateChecks;
+        }
     }
     public static class SymbolExtensions
     {

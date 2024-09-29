@@ -38,9 +38,9 @@ namespace TestBudgetManageAPI
             using (var context = new DBContextBudgetManageAPI(options))
             {
                 context.Outcomes.AddRange(
-                    new Outcome { Id = 1, UserId = "user1", Description = "Groceries", Date = new DateTime(2022, 1, 1), Amount = 200 },
-                    new Outcome { Id = 2, UserId = "user1", Description = "Rent", Date = new DateTime(2022, 2, 1), Amount = 300 },
-                    new Outcome { Id = 3, UserId = "user1", Description = "Utilities", Date = new DateTime(2022, 3, 1), Amount = 250 }
+                    //new Outcome { Id = 1, UserId = "user1", Description = "Groceries", Date = new DateTime(2022, 1, 1), Amount = 200 },
+                    //new Outcome { Id = 2, UserId = "user1", Description = "Rent", Date = new DateTime(2022, 2, 1), Amount = 300 },
+                    //new Outcome { Id = 3, UserId = "user1", Description = "Utilities", Date = new DateTime(2022, 3, 1), Amount = 250 }
                 );
                 context.SaveChanges();
             }
@@ -66,9 +66,9 @@ namespace TestBudgetManageAPI
             using (var context = new DBContextBudgetManageAPI(options))
             {
                 context.Outcomes.AddRange(
-                    new Outcome { Id = 1, UserId = "user1", Description = "Groceries", Date = new DateTime(2022, 1, 1), Amount = 200 },
-                    new Outcome { Id = 2, UserId = "user1", Description = "Rent", Date = new DateTime(2022, 2, 1), Amount = 300 },
-                    new Outcome { Id = 3, UserId = "user1", Description = "Utilities", Date = new DateTime(2022, 3, 1), Amount = 250 }
+                    //new Outcome { Id = 1, UserId = "user1", Description = "Groceries", Date = new DateTime(2022, 1, 1), Amount = 200 },
+                    //new Outcome { Id = 2, UserId = "user1", Description = "Rent", Date = new DateTime(2022, 2, 1), Amount = 300 },
+                    //new Outcome { Id = 3, UserId = "user1", Description = "Utilities", Date = new DateTime(2022, 3, 1), Amount = 250 }
                 );
                 context.SaveChanges();
             }
