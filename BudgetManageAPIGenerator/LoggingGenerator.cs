@@ -20,32 +20,49 @@ namespace BudgetManageAPIGenerator
 
         public void Execute(GeneratorExecutionContext context)
         {
-             //Iterate over all the syntax trees in the project
+            // Specify the folders you want to include
+            var targetFolders = new[] { "Controllers", "Services" }; // Add the folders you want to target here
+
+            //Iterate over all the syntax trees in the project
             var syntaxTrees = context.Compilation.SyntaxTrees;
-            foreach (var syntaxTree in syntaxTrees)
-            {
-                var root = syntaxTree.GetRoot();
+            //foreach (var syntaxTree in syntaxTrees)
+            //{
 
-                // Find method declarations in the syntax tree
-                var methods = root.DescendantNodes()
-                                  .OfType<MethodDeclarationSyntax>()
-                                  .Where(m => m.Body != null); // Only methods with bodies
+            //    var filePath = syntaxTree.FilePath;
 
-                // For each method, generate logging-wrapped methods
-                foreach (var method in methods)
-                {
-                    var classDeclaration = method.Parent as ClassDeclarationSyntax;
-                    if (classDeclaration != null)
-                    {
-                        var className = classDeclaration.Identifier.Text;
-                        var methodName = method.Identifier.Text;
+            //    // Filter for specific folders
+            //    if (!targetFolders.Any(folder => filePath.IndexOf(folder, StringComparison.OrdinalIgnoreCase) >= 0))
+            //    {
+            //        continue; // Skip files not in the specified folders
+            //    }
 
-                        // Generate the logging method
-                        var sourceText = GenerateLoggingMethod(className, methodName);
-                        context.AddSource($"{className}_{methodName}_Logging.cs", SourceText.From(sourceText, Encoding.UTF8));
-                    }
-                }
-            }
+            //    var root = syntaxTree.GetRoot();
+
+            //    // Find method declarations in the syntax tree
+            //    var methods = root.DescendantNodes()
+            //                      .OfType<MethodDeclarationSyntax>()
+            //                      .Where(m => m.Body != null); // Only methods with bodies
+
+            //    // For each method, generate logging-wrapped methods
+            //    foreach (var method in methods)
+            //    {
+            //        var classDeclaration = method.Parent as ClassDeclarationSyntax;
+            //        if (classDeclaration != null)
+            //        {
+            //            var className = classDeclaration.Identifier.Text;
+            //            var methodName = method.Identifier.Text;
+
+            //            // Get parameter types for unique naming
+            //            var parameterTypes = string.Join("_", method.ParameterList.Parameters
+            //                                                .Select(p => p.Type.ToString()));
+
+            //            // Generate the logging method with a unique hint name
+            //            var sourceText = GenerateLoggingMethod(className, methodName);
+            //            var uniqueHintName = $"{className}_{methodName}_{parameterTypes}_Logging.cs".Replace("<", "").Replace(">", ""); // Remove special characters for the filename
+            //            context.AddSource(uniqueHintName, SourceText.From(sourceText, Encoding.UTF8));
+            //        }
+            //    }
+            //}
         }
 
         private string GenerateLoggingMethod(string className, string methodName)
