@@ -44,8 +44,8 @@ namespace BudgetManageAPIGenerator.Generators // Namespace for the source genera
                 var root = syntaxTree.GetRoot();
                 // Find all class declarations with attributes
                 var classDeclarations = root.DescendantNodes()
-                    .OfType<ClassDeclarationSyntax>()
-                    .Where(c => c.AttributeLists.Count > 0);
+                    .OfType<ClassDeclarationSyntax>();
+                    //.Where(c => c.AttributeLists.Count > 0);
 
                 // Define the namespace for models
                 var modelsNamespace = "BudgetManageAPI.Models";
