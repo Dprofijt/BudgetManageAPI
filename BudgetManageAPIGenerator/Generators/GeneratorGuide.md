@@ -68,7 +68,21 @@ var semanticModel = context.Compilation.GetSemanticModel(syntaxTree);
 
 The **semantic model** allows you to resolve syntax nodes to **symbols**, which represent the actual code elements (like classes, properties, methods) in the compilation.
 
-#### 2.2.2 **What is `classSymbol`?**
+
+#### 2.2.2 Class Declarations
+
+A **class declaration** refers to how classes are identified in the syntax tree. Using Roslyn, we search for `ClassDeclarationSyntax` nodes, which represent all classes in the current code base.
+
+```
+var classDeclarations = root.DescendantNodes()
+    .OfType<ClassDeclarationSyntax>()
+    .Where(c => c.AttributeLists.Count > 0); // Find class declarations with attributes
+```
+
+Here, we retrieve all class declarations that have attributes applied to them, as they are of interest for code generation.
+
+
+#### 2.2.3 **What is `classSymbol`?**
 
 The `classSymbol` represents the **symbol** of the class that we're inspecting. A **symbol** is an abstraction in Roslyn that represents a type (like a class, struct, or interface), method, or property.
 
@@ -78,7 +92,8 @@ var classSymbol = semanticModel.GetDeclaredSymbol(classDeclaration) as INamedTyp
 ```
 
 -   The `classSymbol` is an `INamedTypeSymbol`, which specifically represents a **class**, **interface**, **struct**, or **enum** symbol.
--   By analyzing this `classSymbol`, we can access details about the class, such as its name, properties, methods, and even its base types.
+
+By analyzing this `classSymbol`, we can access details about the class, such as its name, properties, methods, and even its base types.
 
 For example, if you want to generate code based on properties defined in this class, you can extract them from the `classSymbol` like this:
 
@@ -91,7 +106,7 @@ var properties = classSymbol.GetMembers()
 
 The `classSymbol` essentially acts as a bridge between the syntax (the raw text/code) and the semantic meaning of the class (its properties, methods, etc.).
 
-#### 2.2.3 **Class and Attribute Detection**
+#### 2.2.4 **Class and Attribute Detection**
 
 You can also inspect **attributes** applied to the class, and use them to determine whether or not to generate code.
 
