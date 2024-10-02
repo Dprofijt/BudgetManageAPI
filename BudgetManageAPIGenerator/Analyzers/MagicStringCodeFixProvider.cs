@@ -55,8 +55,11 @@ namespace BudgetManageAPIGenerator.Analyzers
                 .OfType<FieldDeclarationSyntax>()
                 .Any(field => field.Declaration.Variables.Any(v => v.Identifier.Text == constantName));
 
-            // Use a SyntaxEditor to apply multiple changes at once
-            var editor = new SyntaxEditor(root, document.Project.Solution.Workspace);
+            // Get HostWorkspaceServices from the document
+            var workspaceServices = document.Project.Solution.Workspace.Services;
+
+            // Use a SyntaxEditor to apply multiple changes at once with the new constructor
+            var editor = new SyntaxEditor(root, workspaceServices);
 
             // If the constant doesn't exist, add it to the class
             if (!constantExists)
@@ -92,6 +95,7 @@ namespace BudgetManageAPIGenerator.Analyzers
             var newRoot = editor.GetChangedRoot();
             return document.WithSyntaxRoot(newRoot);
         }
+
 
 
 
