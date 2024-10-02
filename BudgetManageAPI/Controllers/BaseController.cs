@@ -2,6 +2,8 @@
 using BudgetManageAPI.Interfaces;
 using CommonLibrary;
 using Microsoft.AspNetCore.Mvc;
+using GeneratedDto;
+using BudgetManageAPI.Models;
 
 namespace BudgetManageAPI.Controllers
 {
@@ -14,7 +16,12 @@ namespace BudgetManageAPI.Controllers
         }
         protected IActionResult OkWithDto(T item, DtoFilter filter)
         {
-            var dto = DtoGenerator.GenerateDto(item, filter);
+            //Can be used like:
+            //var dto2 = new Income { Amount = 10, Description = "testc"};
+            //var dtoIncome = new IncomeDTO();
+            //dtoIncome.Map(dto2);
+            //var income = new Outcome.Builder();
+
             var dto = DtoGenerator_old.GenerateDto(item, filter);
             return Ok(dto);
         }
