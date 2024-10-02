@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BudgetManageAPI.Models
 {
+    [GenerateBuilder]
     public partial class Outcome : AutoGeneratableCashFlowBase, ICashFlow
     {
         [Key]
