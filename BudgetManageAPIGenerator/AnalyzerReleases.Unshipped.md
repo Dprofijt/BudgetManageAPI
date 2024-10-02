@@ -6,3 +6,4 @@
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 BGA001 | Usage | Error | PropertyGenerator
+MAGIC_STRING | Naming | Warning | MagicStringAnalyzer
