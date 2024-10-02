@@ -9,7 +9,7 @@ using CommonLibrary.Attributes;
 
 namespace BudgetManageAPI.Dtos
 {
-    public class DtoGenerator 
+    public class DtoGenerator_old 
     {
         /// <summary>
         /// Generates a dynamic Data Transfer Object (DTO) from a given model object,
