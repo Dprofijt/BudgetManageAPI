@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis; // Provides access to Roslyn APIs
+﻿using CommonLibrary.Attributes;
+using Microsoft.CodeAnalysis; // Provides access to Roslyn APIs
 using Microsoft.CodeAnalysis.CSharp.Syntax; // For C# syntax nodes
 using System; // Basic types
 using System.Collections.Generic; // For collections
@@ -71,7 +72,7 @@ namespace BudgetManageAPIGenerator.Generators // Namespace for the source genera
 
                     // Check for AutoGeneratePropertiesAttribute on the derived class
                     var classAttributes = classSymbol.GetAttributes()
-                        .Where(ad => ad.AttributeClass?.ToDisplayString() == "CommonLibrary.Attributes.AutoGeneratePropertiesAttribute");
+                        .Where(ad => ad.AttributeClass?.ToDisplayString() == nameof(AutoGeneratePropertiesAttribute));
 
                     // Add properties specified in the attribute
                     foreach (var classAttribute in classAttributes)
@@ -144,7 +145,7 @@ namespace {classSymbol.ContainingNamespace}
             while (baseClass != null)
             {
                 var baseAttributes = baseClass.GetAttributes()
-                    .FirstOrDefault(ad => ad.AttributeClass?.ToDisplayString() == "CommonLibrary.Attributes.AutoGeneratePropertiesAttribute");
+                    .FirstOrDefault(ad => ad.AttributeClass?.ToDisplayString() == nameof(AutoGeneratePropertiesAttribute));
 
                 // If the base class has the attribute, get its properties
                 if (baseAttributes != null)
