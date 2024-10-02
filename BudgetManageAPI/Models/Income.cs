@@ -3,10 +3,11 @@ using BudgetManageAPI.Enums;
 using BudgetManageAPI.Interfaces;
 using CommonLibrary.Abstract;
 using System.ComponentModel.DataAnnotations;
+using CommonLibrary.Attributes.DTOGenerator;
 
 namespace BudgetManageAPI.Models
 {
-
+    [GenerateDto("IncomeDTO", "IncomeDTOWithNoUser")]
     public partial class Income : AutoGeneratableCashFlowBase, ICashFlow
     {
         [Sensitive]
@@ -16,18 +17,19 @@ namespace BudgetManageAPI.Models
 
         public MoneyIncomeCatagory MoneyIncomeCatagory { get; set; }
         public DateTime Date { get; set; }
-        [Sensitive]
+        [ExcludeProperty("IncomeDTOWithNoUser")]
         public string? UserId { get; set; }
 
 
 
         // Computed property based on income category
-        public string IncomeCategoryDisplay => MoneyIncomeCatagory.ToString();
+        //public string IncomeCategoryDisplay => MoneyIncomeCatagory.ToString();
 
         // Mask sensitive data (e.g., UserId)
-        public string MaskedUserId => string.IsNullOrEmpty(UserId) ? "" : "****" + UserId[^4..];
+        //[ExcludeProperty("IncomeDTOWithNoUser")]
+        //public string MaskedUserId => string.IsNullOrEmpty(UserId) ? "" : "****" + UserId[^4..];
 
         // Custom validation logic to ensure Date is not in the future
-        public bool IsValidDate() => Date <= DateTime.Now;
+        //public bool IsValidDate() => Date <= DateTime.Now;
     }
 }
