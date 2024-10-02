@@ -34,7 +34,7 @@ namespace BudgetManageAPIGenerator.Analyzers
 
         private async Task<Document> ReplaceWithConstantAsync(Document document, Location diagnosticLocation, CancellationToken cancellationToken)
         {
-            // Get the syntax root
+            // Get the syntax root and the literal expression where the magic string was found
             var root = await document.GetSyntaxRootAsync(cancellationToken);
             var stringLiteral = root.FindNode(diagnosticLocation.SourceSpan) as LiteralExpressionSyntax;
 
@@ -61,7 +61,7 @@ namespace BudgetManageAPIGenerator.Analyzers
             // If the constant doesn't exist, add it to the class
             if (!constantExists)
             {
-                // Create the constant declaration (e.g., private const string MagicString_Admin = "Admin";)
+                // Create the constant declaration
                 var constantDeclaration = SyntaxFactory.FieldDeclaration(
                     SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("string"))
                         .WithVariables(
@@ -76,17 +76,25 @@ namespace BudgetManageAPIGenerator.Analyzers
                 ).WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ConstKeyword)))
                 .NormalizeWhitespace();
 
-                // Insert the constant at the start of the class
+                // Create leading and trailing trivia for proper formatting
+                var leadingNewLine = SyntaxFactory.TriviaList(SyntaxFactory.ElasticCarriageReturnLineFeed);
+                var trailingNewLine = SyntaxFactory.TriviaList(SyntaxFactory.CarriageReturnLineFeed);
+
+                // Insert the constant declaration at the start of the class
+                constantDeclaration = constantDeclaration.WithLeadingTrivia(leadingNewLine).WithTrailingTrivia(trailingNewLine);
                 editor.InsertBefore(classDeclaration.Members.First(), constantDeclaration);
             }
 
-            // Replace the magic string with the constant reference
+            // Replace the string literal with the constant reference
             editor.ReplaceNode(stringLiteral, SyntaxFactory.IdentifierName(constantName));
 
             // Apply both changes in a single update
             var newRoot = editor.GetChangedRoot();
             return document.WithSyntaxRoot(newRoot);
         }
+
+
+
 
 
 
