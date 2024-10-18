@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Dynamic;
 using CommonLibrary.Attributes;
+using BudgetManageAPI.Attributes;
 
 namespace BudgetManageAPI.Dtos
 {
@@ -18,6 +19,7 @@ namespace BudgetManageAPI.Dtos
         /// <param name="model">The source object from which to create the DTO.</param>
         /// <param name="filter">The filter to apply when generating the DTO.</param>
         /// <returns>An ExpandoObject representing the filtered properties of the model.</returns>
+        [Log]
         public static object GenerateDto(object model, DtoFilter filter = DtoFilter.Default)
         {
             var dto = new ExpandoObject() as IDictionary<string, object>;
