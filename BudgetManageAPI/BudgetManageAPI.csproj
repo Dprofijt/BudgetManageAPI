@@ -31,7 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Attributes\" />
+    <Folder Include="docs\" />
+    <Folder Include="Examples\Tests\" />
     <Folder Include="obj\Generated\BudgetManageAPIGenerator\" />
   </ItemGroup>
 
@@ -42,5 +43,39 @@
   <Target Name="CleanGeneratedFiles" BeforeTargets="Build">
     <Delete Files="@(GeneratedFiles)" />
   </Target>
+  <!--<Target Name="MoveGeneratedTests" AfterTargets="Build">
+    <MakeDir Directories="..\YourTestProject\GeneratedTests\" />
+    <Copy SourceFiles="obj\Generated\BudgetManageAPIGenerator\BudgetManageAPIGenerator.Generators.DocumentationGenerator\*.cs" DestinationFolder="..\YourTestProject\GeneratedTests\" SkipUnchangedFiles="true" />
+  </Target>-->
+  <Target Name="CopyGeneratedTestFiles" AfterTargets="AfterCompile">
+    <ItemGroup>
+      <GeneratedTests Include="obj\Generated\BudgetManageAPIGenerator\**\*GeneratedTests.cs" />
+    </ItemGroup>
+    <Move SourceFiles="@(GeneratedTests)" DestinationFolder="..\TestBudgetManageAPI\Tests\GeneratedTests\" />
+    <Delete Files="@(GeneratedTests)" />
+  </Target>
+
+  <!--<Target Name="CopyAndRenameMarkdownFiles" AfterTargets="AfterCompile">
+    <ItemGroup>
+      <MarkdownFiles Include="obj\Generated\BudgetManageAPIGenerator\**\*.md.cs" />
+    </ItemGroup>
+
+    --><!-- Create the destination directory if it doesn't exist --><!--
+    <MakeDir Directories="$(ProjectDir)docs" Condition="!Exists('$(ProjectDir)docs')" />
+
+    --><!-- Copy and rename the files --><!--
+    <Copy
+      SourceFiles="@(MarkdownFiles)"
+      DestinationFiles="@(MarkdownFiles->'$(ProjectDir)docs\%(Filename).md')"
+      />
+
+    --><!-- Optionally delete the original .md.cs files after copying --><!--
+    <Delete Files="@(MarkdownFiles)" />
+  </Target>-->
+
+
+
+
+
 
 </Project>
