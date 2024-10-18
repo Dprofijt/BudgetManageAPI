@@ -32,4 +32,18 @@ namespace BudgetManageAPI.Models
         // Custom validation logic to ensure Date is not in the future
         //public bool IsValidDate() => Date <= DateTime.Now;
     }
+    public class UserService
+    {
+        private const string MagicString_Admin = "Admin"; //expect no warning for this line
+        private const string MagicString_Active = "Active"; //expect no warning for this line
+        public string GetUserRole()
+        {
+            return "Admin"; // Expect warning for this line
+        }
+
+        public string GetUserStatus()
+        {
+            return MagicString_Active;
+        }
+    }
 }

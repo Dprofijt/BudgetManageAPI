@@ -13,14 +13,20 @@ namespace BudgetManageAPIGenerator.Analyzers
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class MagicStringAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "MAGIC_STRING";
-        private const string Title = "Magic String Detected";
-        private const string MessageFormat = "The string '{0}' is a magic string";
-        private const string Description = "Avoid using magic strings. Use constants or enums instead.";
+        public const string DiagnosticId = "MagicString";
+        private static readonly LocalizableString Title = "Magic String";
+        private static readonly LocalizableString MessageFormat = "Avoid using magic strings: '{0}'";
+        private static readonly LocalizableString Description = "Magic strings should be replaced with constants.";
         private const string Category = "Naming";
 
         private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-            DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
+            DiagnosticId,
+            Title,
+            MessageFormat,
+            Category,
+            DiagnosticSeverity.Hidden,
+            isEnabledByDefault: true,
+            description: Description);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -28,39 +34,71 @@ namespace BudgetManageAPIGenerator.Analyzers
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
             context.EnableConcurrentExecution();
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.StringLiteralExpression);
+            context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.StringLiteralExpression);
         }
 
-        private void AnalyzeNode(SyntaxNodeAnalysisContext context)
+        private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
         {
-            var stringLiteral = (LiteralExpressionSyntax)context.Node;
-            var value = stringLiteral.Token.ValueText;
 
-            // Check if the string is a magic string
-            if (IsMagicString(value))
+            var document = context.Node.SyntaxTree;
+            var filePath = document.FilePath;
+
+            // Skip analysis for files in "Migrations" or "EF-generated" folders
+            if (filePath != null && (filePath.Contains("Migrations") || filePath.Contains("EF-generated")))
             {
-                // Check if the magic string is already replaced with a constant
-                var parent = stringLiteral.FirstAncestorOrSelf<MemberDeclarationSyntax>();
-                var hasConstant = parent.DescendantNodes()
-                    .OfType<FieldDeclarationSyntax>()
-                    .Any(field => field.Declaration.Variables.Any(v => v.Identifier.Text == $"MagicString_{value.Replace("\"", "").Replace(" ", "_")}"));
+                return;
+            }
 
-                // Report diagnostic if it's not replaced by a constant
-                if (!hasConstant)
+
+            var stringLiteral = (LiteralExpressionSyntax)context.Node;
+
+            // Check if the string is already assigned to a constant
+            var parent = stringLiteral.Parent;
+
+            // Look for constant declarations in the same class
+            var classDeclaration = parent.FirstAncestorOrSelf<ClassDeclarationSyntax>();
+            if (classDeclaration != null)
+            {
+                var symbolInfo = context.SemanticModel.GetSymbolInfo(stringLiteral);
+                if (symbolInfo.Symbol != null && symbolInfo.Symbol.Kind == SymbolKind.Field)
                 {
-                    var diagnostic = Diagnostic.Create(Rule, stringLiteral.GetLocation(), value);
-                    context.ReportDiagnostic(diagnostic);
+                    // If it's a constant that has been previously defined, do not warn
+                    return;
+                }
+
+                // Check if the string is already defined as a constant in the class
+                var constants = classDeclaration.Members
+                    .OfType<FieldDeclarationSyntax>()
+                    .SelectMany(field => field.Declaration.Variables)
+                    .ToList(); // Use List for compatibility
+
+                // Check if the constant name contains "MagicString" and skip warning if it does
+                foreach (var constant in constants)
+                {
+                    if (constant.Identifier.Text.Contains("MagicString"))
+                    {
+                        if (constant.Initializer?.Value.ToString() == stringLiteral.Token.ValueText)
+                        {
+                            return; // Skip warning if it's assigned to a MagicString constant
+                        }
+                    }
+                }
+
+                // Check if the string is used in an attribute
+                var attribute = parent.FirstAncestorOrSelf<AttributeSyntax>();
+                if (attribute != null)
+                {
+                    return; // Skip warning if it's used in an attribute
                 }
             }
+
+            // If it's a magic string that hasn't been replaced by a constant, report a warning
+            var diagnostic = Diagnostic.Create(Rule, stringLiteral.GetLocation(), stringLiteral.Token.ValueText);
+            context.ReportDiagnostic(diagnostic);
         }
 
 
-        private bool IsMagicString(string value)
-        {
-            // Define your logic to determine if the string is "magic"
-            // For example, magic strings might be defined in a list:
-            var magicStrings = new[] { "Admin", "User", "Default", "Active" };
-            return Array.Exists(magicStrings, magicString => magicString == value);
-        }
+
     }
+
 }
