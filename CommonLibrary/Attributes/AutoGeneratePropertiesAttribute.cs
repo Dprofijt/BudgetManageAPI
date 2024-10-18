@@ -19,7 +19,13 @@ namespace CommonLibrary.Attributes
             Properties = properties.Select(p =>
             {
                 var parts = p.Split(':');
-                return new PropertyInfo(parts[0], parts[1], bool.Parse(parts[2]), parts[3]);
+                if (parts.Length >=4)
+                {
+                    return new PropertyInfo(parts[0], parts[1], bool.Parse(parts[2]), parts[3]);
+                }else
+                {
+                    return new PropertyInfo(parts[0], parts[1], bool.Parse(parts[2]));
+                }
             }).ToArray();
         }
     }
